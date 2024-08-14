@@ -8,10 +8,9 @@ class MyModel(nn.Module):
 
         super().__init__()
 
-        # YOUR CODE HERE
-        # Define a CNN architecture. Remember to use the variable num_classes
-        # to size appropriately the output of your classifier, and if you use
-        # the Dropout layer, use the variable "dropout" to indicate how much
+        # Define a CNN architecture. Use the variable num_classes
+        # to size appropriately the output of your classifier, and use the 
+        # variable "dropout" to indicate how much
         # to use (like nn.Dropout(p=dropout))
         self.model = nn.Sequential(
             nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, padding=1),
@@ -34,14 +33,14 @@ class MyModel(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(2, 2),
 
-            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding=1),
-            nn.BatchNorm2d(128),
+            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1),
+            nn.BatchNorm2d(256),
             nn.ReLU(),
             nn.MaxPool2d(2, 2),
 
             nn.Flatten(),
 
-            nn.Linear(128*7*7, 8192),
+            nn.Linear(256*7*7, 8192),
             nn.Dropout(p=dropout),
             nn.BatchNorm1d(8192),
             nn.ReLU(),
@@ -60,9 +59,9 @@ class MyModel(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # YOUR CODE HERE: process the input tensor through the
+        # process the input tensor through the
         # feature extractor, the pooling and the final linear
-        # layers (if appropriate for the architecture chosen)
+        # layers
         return self.model(x)
 
 
@@ -84,7 +83,7 @@ def test_model_construction(data_loaders):
     model = MyModel(num_classes=23, dropout=0.3)
 
     dataiter = iter(data_loaders["train"])
-    images, labels = dataiter.next()
+    images, labels = next(dataiter)
 
     out = model(images)
 

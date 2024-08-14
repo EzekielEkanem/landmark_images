@@ -21,7 +21,7 @@ class Predictor(nn.Module):
         # We use nn.Sequential and not nn.Compose because the former
         # is compatible with torch.script, while the latter isn't
         self.transforms = nn.Sequential(
-            T.Resize([256, ]),  # We use single int value inside a list due to torchscript type restrictions
+            T.Resize([256, ], antialias=True),  # We use single int value inside a list due to torchscript type restrictions
             T.CenterCrop(224),
             T.ConvertImageDtype(torch.float),
             T.Normalize(mean.tolist(), std.tolist())
@@ -47,7 +47,7 @@ def predictor_test(test_dataloader, model_reloaded):
     """
 
     folder = get_data_location()
-    test_data = datasets.ImageFolder(os.path.join(folder, "test"), transform=T.ToTensor())
+    test_data = datasets.ImageFolder(os.path.join(folder, "test"), transform=T.ToTensor(antialias=True))
 
     pred = []
     truth = []
@@ -90,7 +90,7 @@ def test_model_construction(data_loaders):
     model = MyModel(num_classes=3, dropout=0.3)
 
     dataiter = iter(data_loaders["train"])
-    images, labels = dataiter.next()
+    images, labels = next(dataiter)
 
     predictor = Predictor(model, class_names=['a', 'b', 'c'], mean=mean, std=std)
 
